@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:descendantFocusability="blocksDescendants"
+	android:orientation="vertical">
+
+
+	<ImageView
+		android:id="@+id/place_image"
+		android:layout_width="match_parent"
+		android:layout_height="40dp"
+		/>
+	<TextView
+		android:id = "@+id/text_place"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textColor="#FFFAF0"
+		android:text="wenzhou"
+		android:textSize="20sp"
+		android:background="#2F4F4F"/>
+</LinearLayout>
