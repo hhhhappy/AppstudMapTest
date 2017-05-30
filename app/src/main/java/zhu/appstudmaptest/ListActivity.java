@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -46,21 +47,25 @@ public class ListActivity extends Activity {
         setContentView(R.layout.activity_list);
         //load the views
         listView = (ListView) findViewById(R.id.list_place);
+        listView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    getBars(location.getLatitude(), location.getLongitude());
+                    adapter = new BarAdapter(ListActivity.this, R.layout.list_item, barList);
+                    listView.setAdapter(adapter);
+                    return true;
+                }
+
+                return false;
+            }
+        });
         Button buttonGoToMap = (Button) findViewById(R.id.go_to_map);
         buttonGoToMap.setOnClickListener(new View.OnClickListener() {
                                              @Override
                                              public void onClick(View view) {
                                                  Toast.makeText(ListActivity.this, "Sorry, i don't finish this part.", Toast.LENGTH_LONG).show();
                                              }
-        });
-        Button buttonRefresh = (Button) findViewById(R.id.button_refresh);
-        buttonRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getBars(location.getLatitude(), location.getLongitude());
-                adapter = new BarAdapter(ListActivity.this, R.layout.list_item, barList);
-                listView.setAdapter(adapter);
-            }
         });
 
         //test if location provider is available and get location

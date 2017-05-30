@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:id = "@+id/linear">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -10,14 +11,8 @@
         <Button
             android:id="@+id/go_to_map"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:text="Go to map"
-            />
-        <Button
-            android:id="@+id/button_refresh"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Click here to refresh"
             />
     </LinearLayout>
     <LinearLayout
@@ -27,7 +22,7 @@
         <ListView
             android:id="@+id/list_place"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:divider="#330033">
 
         </ListView>
