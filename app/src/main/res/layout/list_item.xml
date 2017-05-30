@@ -10,7 +10,8 @@
 	<ImageView
 		android:id="@+id/place_image"
 		android:layout_width="match_parent"
-		android:layout_height="40dp"
+		android:scaleType="center"
+		android:layout_height="65dp"
 		/>
 	<TextView
 		android:id = "@+id/text_place"

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -41,10 +42,11 @@ public class ListActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
-
+        //load the views
         listView = (ListView) findViewById(R.id.list_place);
+        Button button = (Button) findViewById(R.id.go_to_map);
 
-        //Part of getting location
+        //test if location provider is available and get location
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         List<String> providerList = locationManager.getProviders(true);
         checkCallingOrSelfPermission("android.permission.ACCESS_FINE_LOCATION");
@@ -60,15 +62,15 @@ public class ListActivity extends Activity {
         }
         Location location = locationManager.getLastKnownLocation(provider);
         if (location != null){
-            Toast.makeText(this, location.getLatitude() + "," + location.getLongitude(), Toast.LENGTH_SHORT).show();
             getBars(location.getLatitude(), location.getLongitude());
         }
         locationManager.requestLocationUpdates(provider, 5000, 1, locationListener);
-        /*put list into lisView*/
+        //put list into lisView
         adapter = new BarAdapter(ListActivity.this, R.layout.list_item, barList);
         listView.setAdapter(adapter);
 
     }
+    //add listener for the location
     LocationListener locationListener = new LocationListener(){
         @Override
         public void onLocationChanged(Location location) {
@@ -97,7 +99,8 @@ public class ListActivity extends Activity {
         }
     };
     private void getBars(final double lat, final double lon) {
-         new Thread(
+        //get the bars' names and image urls
+        new Thread(
                 new Runnable(){
 
                     @Override
@@ -123,19 +126,29 @@ public class ListActivity extends Activity {
                                 JSONArray resultArray = jsonObject.getJSONArray("results");
 
                                 //iterate the result
-                                for (int i = 0, size = resultArray.length(); i < size; i++){
-
-                                    JSONObject bar = resultArray.getJSONObject(i);
-                                    /*get the name of bar*/
-                                    String name = bar.get("name").toString();
-                                    /*get the photo reference of bar*/
-                                    JSONArray photos = (JSONArray) bar.get("photos");
-                                    String referencePhoto = photos.getJSONObject(0).get("photo_reference").toString();
-                                    String urlImage = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+ referencePhoto +"&key=AIzaSyAxZCzOEbgGeEuSPkT7bWHe9AsAWB1bY6Q";
+                                if(resultArray.length() > 0) {
+                                    String res = "";
+                                    for (int i = 0, size = resultArray.length(); i < size; i++) {
+                                        if (i >= 21) {
+                                            //already find 20 bars
+                                            break;
+                                        }
+                                        JSONObject bar = resultArray.getJSONObject(i);
+                                        /*get the name of bar*/
+                                        String name = bar.get("name").toString();
+                                        /*get the photo reference of bar*/
+                                        JSONArray photos = (JSONArray) bar.get("photos");
+                                        String referencePhoto = photos.getJSONObject(0).get("photo_reference").toString();
+                                        String urlImage = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + referencePhoto + "&key=AIzaSyAxZCzOEbgGeEuSPkT7bWHe9AsAWB1bY6Q";
+                                        res = res + name + "," + urlImage + ";";
+                                    }
                                     Message message = new Message();
                                     message.what = RESULT_OK;
-                                    message.obj = name + "," + urlImage;
+                                    message.obj = res;
                                     handler.sendMessage(message);
+                                }
+                                else{
+                                    Log.e("API_Error", "result is null");
                                 }
                             }
 
@@ -153,11 +166,14 @@ public class ListActivity extends Activity {
             switch(msg.what){
                 case RESULT_OK:
                     String result = (String)msg.obj;
-                    String[] arrayResult = result.split(",");
-                    if(!barNameList.contains(arrayResult[0])) {
-                        barNameList.add(arrayResult[0]);
-                        Log.v("photos",arrayResult[0]+","+arrayResult[1]);
-                        barList.add(new Bar(arrayResult[0], arrayResult[1]));
+                    String[] arrayResult = result.split(";");
+                    for(String s : arrayResult){
+                        String[] infoBar = s.split(",");
+                        if(!barNameList.contains(infoBar[0]) && !infoBar[0].equals("")) {
+                            barNameList.add(infoBar[0]);
+                            Log.v("photos",infoBar[0]+","+infoBar[1]);
+                            barList.add(new Bar(infoBar[0], infoBar[1]));
+                        }
                     }
                     break;
                 default:
